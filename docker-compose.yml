@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: meetsage-db
+    environment:
+      POSTGRES_DB: meetsage
+      POSTGRES_USER: meetsage
+      POSTGRES_PASSWORD: meetsage
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./src/main/resources/db/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+volumes:
+  postgres-data:

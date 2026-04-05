@@ -1,3 +1,53 @@
 spring:
   application:
     name: meetsage
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/meetsage
+    username: meetsage
+    password: meetsage
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 500MB
+      max-request-size: 500MB
+
+  ai:
+    google:
+      genai:
+        api-key: ${GEMINI_API_KEY}
+        chat:
+          options:
+            model: gemini-1.5-flash
+            temperature: 0.2
+        embedding:
+          options:
+            model: text-embedding-004
+    vectorstore:
+      pgvector:
+        index-type: ivfflat
+        distance-type: cosine_distance
+        dimensions: 768
+        initialize-schema: true
+
+meetsage:
+  storage:
+    upload-dir: ${UPLOAD_DIR:./uploads}
+  analysis:
+    chunk-size: 1000
+    chunk-overlap: 150
+    rag-top-k: 5
+    rag-similarity-threshold: 0.6
+
+server:
+  port: 8080
