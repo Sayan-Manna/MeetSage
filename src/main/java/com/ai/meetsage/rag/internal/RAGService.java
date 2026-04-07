@@ -93,7 +93,6 @@ public class RAGService {
      * Answer a question using relevant chunks from all meetings.
      */
     public RAGResponseDTO query(String question) {
-        // 1. Semantic search — use threshold 0.0 first to see ALL results with their scores
         log.info("RAG query start: '{}' | topK={} | threshold={}", question, topK, similarityThreshold);
 
         List<Document> relevant = vectorStore.similaritySearch(

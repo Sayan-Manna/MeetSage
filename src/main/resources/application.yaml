@@ -50,7 +50,7 @@ meetsage:
     chunk-size: 1000
     chunk-overlap: 150
     rag-top-k: 5
-    rag-similarity-threshold: 0.0
+    rag-similarity-threshold: 0.5
 
 
 

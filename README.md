@@ -93,4 +93,9 @@ GET /api/rag/search?q=authentication
 ```
 
 ---
+## Configuration
+To run this project, you need to set the following environment variable:
+- `GEMINI_API_KEY`: Your Google Gemini API Key.
+
+---
 
