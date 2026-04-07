@@ -6,6 +6,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -35,21 +37,26 @@ public class MeetingAnalysis {
     private String summary;
 
     @Column(name = "key_points", columnDefinition = "JSONB")
+    @JdbcTypeCode(SqlTypes.JSON)
     private String keyPoints;
 
     @Column(columnDefinition = "JSONB")
+    @JdbcTypeCode(SqlTypes.JSON)
     private String decisions;
 
     @Column(name = "action_items", columnDefinition = "JSONB")
+    @JdbcTypeCode(SqlTypes.JSON)
     private String actionItems;
 
     @Column(columnDefinition = "JSONB")
+    @JdbcTypeCode(SqlTypes.JSON)
     private String topics;
 
     @Column(name = "sentiment_overall")
     private String sentimentOverall;
 
     @Column(name = "sentiment_scores", columnDefinition = "JSONB")
+    @JdbcTypeCode(SqlTypes.JSON)
     private String sentimentScores;
 
     @Column(name = "suggested_title")

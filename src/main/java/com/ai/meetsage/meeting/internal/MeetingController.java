@@ -47,13 +47,12 @@ public class MeetingController {
 
         validateAudioFile(file);
         String savedPath = fileStorageService.saveAudioFile(file);
-        Meeting meeting = meetingService.createFromAudio(title, savedPath);
+        Meeting meeting = meetingService.createFromAudio(title, savedPath); // Create meeting domain and publish event
 
         return ResponseEntity.accepted().body(Map.of(
                 "meetingId", meeting.getId(),
                 "status", "TRANSCRIBING",
-                "message", "Audio received. Transcription started."
-        ));
+                "message", "Audio received. Transcription started."));
     }
 
     /**
@@ -71,8 +70,7 @@ public class MeetingController {
         return ResponseEntity.accepted().body(Map.of(
                 "meetingId", meeting.getId(),
                 "status", "ANALYSING",
-                "message", "Transcript received. Analysis started."
-        ));
+                "message", "Transcript received. Analysis started."));
     }
 
     /**
@@ -87,8 +85,7 @@ public class MeetingController {
         return ResponseEntity.accepted().body(Map.of(
                 "meetingId", meeting.getId(),
                 "status", "ANALYSING",
-                "message", "Transcript received. Analysis started."
-        ));
+                "message", "Transcript received. Analysis started."));
     }
 
     // ---------------------------------------------------------------
@@ -106,8 +103,7 @@ public class MeetingController {
                 "title", Optional.ofNullable(m.getTitle()).orElse("Untitled"),
                 "status", m.getStatus().name(),
                 "sourceType", m.getSourceType().name(),
-                "createdAt", m.getCreatedAt()
-        ));
+                "createdAt", m.getCreatedAt()));
     }
 
     /**
@@ -121,8 +117,7 @@ public class MeetingController {
             return ResponseEntity.status(HttpStatus.ACCEPTED)
                     .body(Map.of(
                             "status", meeting.getStatus().name(),
-                            "message", "Analysis not ready yet."
-                    ));
+                            "message", "Analysis not ready yet."));
         }
 
         MeetingAnalysis analysis = analysisRepository.findByMeetingId(id)
@@ -140,8 +135,7 @@ public class MeetingController {
         Meeting m = findMeetingOrThrow(id);
         return ResponseEntity.ok(Map.of(
                 "meetingId", m.getId(),
-                "transcript", Optional.ofNullable(m.getRawTranscript()).orElse("")
-        ));
+                "transcript", Optional.ofNullable(m.getRawTranscript()).orElse("")));
     }
 
     /**
@@ -163,8 +157,7 @@ public class MeetingController {
                 "meetings", summaries,
                 "total", meetings.getTotalElements(),
                 "page", page,
-                "size", size
-        ));
+                "size", size));
     }
 
     /**
@@ -221,8 +214,7 @@ public class MeetingController {
         response.put("topics", a.getTopicsAsList());
         response.put("sentiment", Map.of(
                 "overall", Optional.ofNullable(a.getSentimentOverall()).orElse("unknown"),
-                "scores", Optional.ofNullable(a.getSentimentScoresAsMap()).orElse(Map.of())
-        ));
+                "scores", Optional.ofNullable(a.getSentimentScoresAsMap()).orElse(Map.of())));
         response.put("transcript", Optional.ofNullable(m.getRawTranscript()).orElse(""));
         response.put("createdAt", a.getCreatedAt());
         return response;

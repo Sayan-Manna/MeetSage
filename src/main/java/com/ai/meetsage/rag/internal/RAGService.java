@@ -39,12 +39,13 @@ public class RAGService {
     @Value("${meetsage.analysis.rag-top-k:5}")
     private int topK;
 
-    @Value("${meetsage.analysis.rag-similarity-threshold:0.6}")
+    @Value("${meetsage.analysis.rag-similarity-threshold:0.0}")
     private double similarityThreshold;
 
     /**
      * Triggered when analysis for a meeting is complete.
-     * Splits the transcript into overlapping chunks, embeds each, and stores in pgvector.
+     * Splits the transcript into overlapping chunks, embeds each, and stores in
+     * pgvector.
      */
     @Async
     @ApplicationModuleListener
@@ -80,9 +81,7 @@ public class RAGService {
                             "meetingId", meetingId.toString(),
                             "meetingTitle", Optional.ofNullable(meeting.getTitle()).orElse("Untitled"),
                             "meetingDate", meeting.getCreatedAt().toString(),
-                            "chunkIndex", String.valueOf(i)
-                    )
-            );
+                            "chunkIndex", String.valueOf(i)));
             docs.add(doc);
         }
 
@@ -94,21 +93,24 @@ public class RAGService {
      * Answer a question using relevant chunks from all meetings.
      */
     public RAGResponseDTO query(String question) {
-        // 1. Semantic search
+        // 1. Semantic search — use threshold 0.0 first to see ALL results with their scores
+        log.info("RAG query start: '{}' | topK={} | threshold={}", question, topK, similarityThreshold);
+
         List<Document> relevant = vectorStore.similaritySearch(
                 SearchRequest.builder()
                         .query(question)
                         .topK(topK)
                         .similarityThreshold(similarityThreshold)
-                        .build()
-        );
+                        .build());
 
+        // Log actual scores so you can tune the threshold correctly
         if (relevant.isEmpty()) {
+            log.warn("RAG: zero results returned for query '{}' with threshold={}", question, similarityThreshold);
             return new RAGResponseDTO(
                     "I couldn't find relevant content in your meeting records.",
-                    List.of()
-            );
+                    List.of());
         }
+        log.info("RAG: {} chunks matched for query '{}'", relevant.size(), question);
 
         // 2. Build context string from retrieved chunks
         String context = relevant.stream()
@@ -140,8 +142,7 @@ public class RAGService {
                         (String) d.getMetadata().get("meetingId"),
                         (String) d.getMetadata().get("meetingTitle"),
                         (String) d.getMetadata().get("meetingDate"),
-                        d.getText().substring(0, Math.min(200, d.getText().length())) + "..."
-                ))
+                        d.getText().substring(0, Math.min(200, d.getText().length())) + "..."))
                 .toList();
 
         return new RAGResponseDTO(answer, sources);
@@ -155,17 +156,15 @@ public class RAGService {
                 SearchRequest.builder()
                         .query(query)
                         .topK(10)
-                        .similarityThreshold(0.5)
-                        .build()
-        );
+                        .similarityThreshold(0.0)   // permissive — return all semantic matches
+                        .build());
 
         return results.stream()
                 .map(d -> new RAGResponseDTO.Source(
                         (String) d.getMetadata().get("meetingId"),
                         (String) d.getMetadata().get("meetingTitle"),
                         (String) d.getMetadata().get("meetingDate"),
-                        d.getText().substring(0, Math.min(200, d.getText().length())) + "..."
-                ))
+                        d.getText().substring(0, Math.min(200, d.getText().length())) + "..."))
                 .distinct()
                 .toList();
     }

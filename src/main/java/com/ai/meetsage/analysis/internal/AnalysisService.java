@@ -165,7 +165,17 @@ public class AnalysisService {
                         .content())
                 .toList();
 
-        return String.join("\n\n", windowSummaries);
+        String combined = String.join("\n\n", windowSummaries);
+
+        return chatClient.prompt()
+                .user("""
+                        The following is a combination of summaries from meeting transcript windows. Analyse this combined summary as if it were the full transcript, and return a concise summary of the overall meeting:
+                        
+                        """ + combined)
+                .call()
+                .content();
+
+
     }
 
     private String toJson(Object obj) {
