@@ -36,7 +36,8 @@ public class Meeting {
     @Column(nullable = false)
     private MeetingStatus status = MeetingStatus.PENDING;
 
-    @Column(name = "error_message", columnDefinition = "TEXT")
+    @Lob
+    @Column(name = "error_message")
     private String errorMessage;
 
     @Column(name = "created_at", nullable = false, updatable = false)
