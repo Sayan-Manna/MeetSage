@@ -9,8 +9,8 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update
-    show-sql: false
+      ddl-auto: none
+    show-sql: true
     properties:
       hibernate:
         format_sql: true
@@ -21,6 +21,13 @@ spring:
       enabled: true
       max-file-size: 500MB
       max-request-size: 500MB
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migrations
+#    As we already have an initial schema, we can set baseline-on-migrate to true and baseline-version to 1 to avoid errors on the first migration
+    baseline-on-migrate: true
+    baseline-version: 1
 
   ai:
     google:

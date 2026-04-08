@@ -62,8 +62,7 @@ public class MeetingAnalysis {
     @Column(name = "suggested_title")
     private String suggestedTitle;
 
-    @Lob
-    @Column(name = "raw_gemini_response")
+    @Column(name = "raw_gemini_response", columnDefinition = "TEXT")
     private String rawGeminiResponse;
 
     @Column(name = "created_at", nullable = false, updatable = false)
